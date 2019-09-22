@@ -45,7 +45,6 @@ public class GeneticAlgorithm : MonoBehaviour
             }
             Debug.Log(maxScore + " " + ballControls[0].force + " " + ballControls[0].theta);
 
-            Select();
             Crossover();
             Mutation();
 
@@ -57,33 +56,32 @@ public class GeneticAlgorithm : MonoBehaviour
     }
 
     // 選択
-    private void Select()
+    private void Select(ref float force, ref float theta)
     {
-        // トーナメント方式で次世代に残す個体を10体選択する
-        for (int i = 0; i < 10; ++i)
+        // トーナメント方式で選択する
+        int best_num = Random.Range(0, 20);
+        for (int j = 1; j < nt; ++j)
         {
-            int best_num = Random.Range(0, 20);
-            for(int j = 1; j < nt; ++j)
-            {
-                int num = Random.Range(0, 20);
-                if(ballControls[best_num].score < ballControls[num].score) best_num = num;
-            }
-            next_force[i] = ballControls[best_num].force;
-            next_theta[i] = ballControls[best_num].theta;
+            int num = Random.Range(0, 20);
+            if (ballControls[best_num].score < ballControls[num].score) best_num = num;
         }
+        force = ballControls[best_num].force;
+        theta = ballControls[best_num].theta;
     }
 
     // 交叉
     private void Crossover()
     {
-        for(int i = 10; i < 20; i += 2)
+        for(int i = 0; i < 20; i += 2)
         {
-            // 評価値の高い個体の中からランダムに二つ個体を選ぶ
-            int a = Random.Range(0, 10);
-            int b = Random.Range(0, 10);
+            // 個体二つを選択する
+            float force_a = 0f, force_b = 0f, theta_a = 0f, theta_b = 0f;
+            Select(ref force_a, ref theta_a);
+            Select(ref force_b, ref theta_b);
 
-            next_force[i] = next_force[a]; next_theta[i] = next_theta[b];
-            next_force[i + 1] = next_force[b]; next_theta[i + 1] = next_theta[a];
+            // 交叉させる
+            next_force[i] = force_a; next_theta[i] = theta_b;
+            next_force[i + 1] = force_b; next_theta[i + 1] = theta_a;
         }
     }
 
